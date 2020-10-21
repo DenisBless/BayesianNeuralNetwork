@@ -25,7 +25,7 @@ class BayesLinear(torch.nn.Module):
             fan_in, _ = torch.nn.init._calculate_fan_in_and_fan_out(self.w_mean)
             bound = 1 / math.sqrt(fan_in)
             torch.nn.init.uniform_(self.bias, -bound, bound)
-        self.w_std.data.uniform_(-self.std_init, self.std_init)
+        self.w_std.data.uniform_(1e-8, self.std_init)
 
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         act_mean = F.linear(input, self.w_mean, self.bias)
@@ -41,3 +41,5 @@ class BayesLinear(torch.nn.Module):
         a = torch.log(torch.ones_like(self.w_std) * self.prior_std_init ** 2) - torch.log(self.w_std ** 2)
         b = (self.w_std ** 2 + self.w_mean ** 2) / self.prior_std_init ** 2
         return torch.sum(0.5 * (a + b - 1))
+
+torch.nn.Linear

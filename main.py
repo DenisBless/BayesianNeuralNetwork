@@ -16,8 +16,8 @@ class BayesNN(torch.nn.Module):
         self.bl3 = BayesLinear(100, 1)
 
     def forward(self, x):
-        x = F.relu(self.bl1(x))
-        x = F.relu(self.bl2(x))
+        x = F.leaky_relu(self.bl1(x))
+        x = F.leaky_relu(self.bl2(x))
         x = self.bl3(x)
         return x
 
@@ -39,23 +39,42 @@ class NN(torch.nn.Module):
         return x
 
 
-if __name__ == '__main__':
-    # %%
-    # Create the dataset
-    x1 = np.linspace(-3, -1, 10)
+def get_dset1():
+    x1 = np.linspace(-3, -1, 20)
     y1 = np.ones_like(x1)
-    x2 = np.linspace(-1, 1, 20)
+    x2 = np.linspace(-1, 1, 30)
     y2 = np.zeros_like(x2)
-    x3 = np.linspace(1, 3, 10)
+    x3 = np.linspace(1, 3, 20)
     y3 = np.ones_like(x3)
 
     X = torch.Tensor(np.concatenate([x1, x2, x3])).reshape(-1, 1)
     Y = torch.Tensor(np.concatenate([y1, y2, y3]))
+    return X, Y
 
+
+def get_dset2():
+    x1 = np.linspace(-3, -1, 20)
+    y1 = 2* np.ones_like(x1)
+    x2 = np.linspace(-1, 0, 20)
+    y2 = -2*x2
+    x3 = np.linspace(0, 1, 20)
+    y3 = 2*x3
+    x4 = np.linspace(1, 3, 20)
+    y4 = 2*np.ones_like(x4)
+
+    X = torch.Tensor(np.concatenate([x1, x2, x3, x4])).reshape(-1, 1)
+    Y = torch.Tensor(np.concatenate([y1, y2, y3, y4]))
+    return X, Y
+
+
+if __name__ == '__main__':
+    # %%
+    # Create the dataset
+    X, Y = get_dset1()
     plt.scatter(X, Y)
 
     torch_dataset = Data.TensorDataset(X, Y)
-    BATCH_SIZE = 10
+    BATCH_SIZE = 30
     loader = Data.DataLoader(
         dataset=torch_dataset,
         batch_size=BATCH_SIZE,
@@ -75,12 +94,13 @@ if __name__ == '__main__':
     num_epochs = 1000
 
     loss_fn = torch.nn.MSELoss()
-    optim = torch.optim.Adam(params=net.parameters(), lr=2e-4)
+    optim = torch.optim.Adam(params=net.parameters(), lr=2e-2)
 
     for epoch in range(num_epochs):
         for i, (batch_x, batch_y) in enumerate(loader):  # for each training step
             # loss = neg_elbo(X, Y, 0)
-            Y_pred = net(batch_x)
+            Y_pred = net(batch_x).reshape(-1, )
+            assert Y_pred.shape == batch_y.shape, print(Y_pred.shape, batch_y.shape)
             loss = loss_fn(batch_y, Y_pred)
             optim.zero_grad()
             loss.backward()

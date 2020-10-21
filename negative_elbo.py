@@ -25,7 +25,7 @@ class NegativeELBO(torch.nn.Module):
         kl = 0.0
         for module in self.net.modules():
             if hasattr(module, 'kl_div'):
-                kl = kl + module.kl_div()
+                kl += module.kl_div()
         return kl
 
     def calc(self, Y_pred, Y, beta):
