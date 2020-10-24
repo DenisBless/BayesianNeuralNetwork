@@ -1,1 +1,7 @@
 # Created by .ignore support plugin (hsz.mobi)
+/figs/
+figs/bnn.pdf
+figs/bnn_mean_std_01.pdf
+figs/bnn_mean_std_02.pdf
+figs/nn.pdf
+utils/__pycache__/

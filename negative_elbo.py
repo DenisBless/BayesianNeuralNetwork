@@ -4,24 +4,21 @@ import torch
 
 class NegativeELBO(torch.nn.Module):
     """
-    Returns value of the evidence lower bound (ELBO)
-    the negative ELBO can be decomposed into the expected negative log likelihood ENLL and the KL-Divergence
+    Returns value of the negative evidence lower bound (ELBO).
+    The negative ELBO can be decomposed into the expected negative log likelihood ENLL and the KL-Divergence
     between the variational and the prior distribution
     """
-
     def __init__(self, net, loss=torch.nn.MSELoss()):
         super(NegativeELBO, self).__init__()
         self.loss = loss
         self.net = net
 
     def __call__(self, X, Y, beta):
-        Y_pred = self.net(X)
-        if np.isnan(Y_pred.detach().numpy()).any():
-            self.net(torch.Tensor(1))
-        assert not np.isnan(Y_pred.detach().numpy()).any()
+        Y_pred = self.net(X).reshape(-1,)
+        assert Y_pred.shape == Y.shape, print(Y_pred.shape, print(Y.shape))
         return self.calc(Y_pred, Y, beta)
 
-    def get_kl_div(self):  #
+    def get_kl_div(self):
         kl = 0.0
         for module in self.net.modules():
             if hasattr(module, 'kl_div'):

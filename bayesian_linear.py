@@ -42,4 +42,3 @@ class BayesLinear(torch.nn.Module):
         b = (self.w_std ** 2 + self.w_mean ** 2) / self.prior_std_init ** 2
         return torch.sum(0.5 * (a + b - 1))
 
-torch.nn.Linear
