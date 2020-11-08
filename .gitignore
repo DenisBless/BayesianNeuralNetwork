@@ -5,3 +5,4 @@ figs/bnn_mean_std_01.pdf
 figs/bnn_mean_std_02.pdf
 figs/nn.pdf
 utils/__pycache__/
+/todo.py

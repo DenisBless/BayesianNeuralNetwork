@@ -11,7 +11,7 @@ class BayesLinear(torch.nn.Module):
         self.out_features = out_features
         self.prior_std_init = prior_std_init
         self.std_init = std_init
-
+        # todo bias is not probabillistic; use code in chrome->B.Sc.->Implementation
         self.w_mean = torch.nn.Parameter(torch.Tensor(out_features, in_features))
         self.w_std = torch.nn.Parameter(torch.Tensor(out_features, in_features))
         if bias:
